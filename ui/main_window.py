@@ -18,6 +18,8 @@ from ui.widgets.thumbnail_widget import ThumbnailWidget
 from ui.config_window import ConfigWindow
 from ui.image_window import ImageWindow
 
+from PIL import Image, ImageOps
+
 class PhotoGalleryApp(QMainWindow):
     def __init__(self):
         super().__init__()
