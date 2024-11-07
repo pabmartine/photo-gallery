@@ -6,7 +6,7 @@ from PIL import Image, ImageOps
 class ImageWindow(QWidget):
     def __init__(self, image_path):
         super().__init__()
-        self.setWindowTitle("Imagen Completa")
+        self.setWindowTitle("Full Image")
         self.setGeometry(100, 100, 800, 600)
         
         layout = QVBoxLayout()

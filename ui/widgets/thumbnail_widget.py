@@ -62,7 +62,7 @@ class ThumbnailWidget(QWidget):
                 )
                 self.image_label.setPixmap(scaled_pixmap)
         except Exception as e:
-            print(f"Error cargando thumbnail {thumbnail_path}: {e}")
+            print(f"Error loading thumbnail {thumbnail_path}: {e}")
         
         # Añadir widgets al layout
         self.content_layout.addWidget(self.image_label)

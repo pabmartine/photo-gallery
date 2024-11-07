@@ -9,7 +9,7 @@ from PyQt5.QtCore import Qt
 class ConfigWindow(QDialog):
     def __init__(self, parent=None, config_manager=None):
         super().__init__(parent)
-        self.setWindowTitle("Opciones")
+        self.setWindowTitle("Options")
         self.setFixedSize(600, 400)
         self.config_manager = config_manager
         self.init_ui()
@@ -26,21 +26,21 @@ class ConfigWindow(QDialog):
         scroll_layout = QVBoxLayout(scroll_content)
         
         # Grupo de rutas
-        paths_group = QGroupBox("Rutas")
+        paths_group = QGroupBox("Paths")
         paths_layout = QGridLayout()  # Cambiamos a QGridLayout
         
         # Ruta de fotos
-        photos_label = QLabel("Carpeta de fotos:")
+        photos_label = QLabel("Photos folder:")
         self.photos_path = QLineEdit()
         self.photos_path.setText(self.config_manager.get_value("paths", "photos"))
-        photos_button = QPushButton("Examinar...")
+        photos_button = QPushButton("Browse...")
         photos_button.clicked.connect(lambda: self.browse_folder(self.photos_path))
         
         # Ruta de miniaturas
-        thumbnails_label = QLabel("Carpeta de miniaturas:")
+        thumbnails_label = QLabel("Thumbnails folder:")
         self.thumbnails_path = QLineEdit()
         self.thumbnails_path.setText(self.config_manager.get_value("paths", "thumbnails"))
-        thumbnails_button = QPushButton("Examinar...")
+        thumbnails_button = QPushButton("Browse...")
         thumbnails_button.clicked.connect(lambda: self.browse_folder(self.thumbnails_path))
         
         # Añadir widgets al grid layout
@@ -57,11 +57,11 @@ class ConfigWindow(QDialog):
         scroll_layout.addWidget(paths_group)
         
         # Grupo CLIP
-        clip_group = QGroupBox("Configuración de CLIP")
+        clip_group = QGroupBox("CLIP Configuration")
         clip_layout = QVBoxLayout()
         
         threshold_layout = QHBoxLayout()
-        threshold_label = QLabel("Umbral de confianza:")
+        threshold_label = QLabel("Confidence threshold:")
         self.threshold_spin = QDoubleSpinBox()
         self.threshold_spin.setRange(0.0, 100.0)
         self.threshold_spin.setDecimals(1)
@@ -85,8 +85,8 @@ class ConfigWindow(QDialog):
         
         # Botones
         button_layout = QHBoxLayout()
-        save_button = QPushButton("Guardar")
-        cancel_button = QPushButton("Cancelar")
+        save_button = QPushButton("Save")
+        cancel_button = QPushButton("Cancel")
         
         save_button.clicked.connect(self.save_config)
         cancel_button.clicked.connect(self.reject)
@@ -100,7 +100,7 @@ class ConfigWindow(QDialog):
     def browse_folder(self, line_edit):
         folder = QFileDialog.getExistingDirectory(
             self,
-            "Seleccionar carpeta",
+            "Select folder",
             line_edit.text() or os.path.expanduser("~")
         )
         if folder:
@@ -125,7 +125,7 @@ class ConfigWindow(QDialog):
             QMessageBox.critical(
                 self,
                 "Error",
-                "No se pudo guardar la configuración"
+                "Could not save configuration"
             )
     
     def centerWindow(self):

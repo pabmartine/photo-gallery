@@ -23,7 +23,7 @@ from PIL import Image, ImageOps
 class PhotoGalleryApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Galería de Fotos")
+        self.setWindowTitle("Photo Gallery")
         self.setGeometry(100, 100, 924, 800)
         self.setMinimumSize(400, 300)
 
@@ -37,14 +37,14 @@ class PhotoGalleryApp(QMainWindow):
         self.model = None
         self.processor = None
         
-        # Filtros y ordenación
+        # Filters and sorting
         self.filter_year = None
         self.filter_month = None
         self.filter_label = None
-        self.sort_order = "ascendente"
+        self.sort_order = "ascending"
         self.show_duplicates = False
         
-        # Paginación
+        # Pagination
         self.items_per_page = 100
         self.current_page = 0
         self.total_pages = 0
@@ -58,37 +58,37 @@ class PhotoGalleryApp(QMainWindow):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # Área de scroll
+        # Scroll area
         self.setup_scroll_area()
         main_layout.addWidget(self.scroll_area)
 
-        # Paginación
+        # Pagination
         self.setup_pagination_frame()
         main_layout.addWidget(self.pagination_frame)
         self.pagination_frame.hide()
 
-        # Menús
+        # Menus
         self.setup_menu()
 
     def load_filter_options(self):
-        """Carga las opciones de filtrado desde los archivos de datos"""
+        """Loads filtering options from data files"""
         if not os.path.exists("index.json"):
             return
 
-        # Limpiar menús existentes
+        # Clear existing menus
         self.year_menu.clear()
         self.month_menu.clear()
         self.label_menu.clear()
 
-        # Cargar datos del índice
+        # Load index data
         with open("index.json", "r") as f:
             images = json.load(f)
 
-        # Obtener años y meses únicos
+        # Get unique years and months
         years = sorted(set(image["year"] for image in images))
         months = sorted(set(image["month"] for image in images))
 
-        # Obtener etiquetas si existen
+        # Obtain labels if they exist
         labels = set()
         if os.path.exists("classification_results.json"):
             try:
@@ -96,15 +96,15 @@ class PhotoGalleryApp(QMainWindow):
                     classification_data = json.load(f)
                     labels = set(item["label"] for item in classification_data.values())
             except Exception as e:
-                print(f"Error cargando etiquetas: {e}")
+                print(f"Error loading labels: {e}")
 
-        # Crear los grupos de acciones
+        # Create the groups of actions
         self.year_action_group = QActionGroup(self)
         self.month_action_group = QActionGroup(self)
         self.label_action_group = QActionGroup(self)
 
-        # Configurar las acciones
-        self.setup_filter_actions("Todos", years, months, labels)
+        # Configure the actions
+        self.setup_filter_actions("All", years, months, labels)
      
     def load_initial_data(self):
         if os.path.exists("index.json"):
@@ -132,9 +132,9 @@ class PhotoGalleryApp(QMainWindow):
         layout = QHBoxLayout(self.pagination_frame)
         layout.setContentsMargins(10, 5, 10, 5)
 
-        self.prev_button = QPushButton("« Anterior")
+        self.prev_button = QPushButton("« Previous")
         self.page_label = QLabel()
-        self.next_button = QPushButton("Siguiente »")
+        self.next_button = QPushButton("Next »")
 
         self.prev_button.setEnabled(False)
         self.next_button.setEnabled(False)
@@ -154,35 +154,35 @@ class PhotoGalleryApp(QMainWindow):
         self.setup_sort_menu(menubar)
         self.setup_tools_menu(menubar)
         
-        config_action = QAction("Opciones", self)
+        config_action = QAction("Options", self)
         config_action.triggered.connect(self.open_config_window)
         menubar.addAction(config_action)
 
     def setup_filter_menu(self, menubar):
-        self.filter_menu = menubar.addMenu("Filtrar")
-        self.year_menu = QMenu("Año", self)
-        self.month_menu = QMenu("Mes", self)
-        self.label_menu = QMenu("Etiquetas", self)
+        self.filter_menu = menubar.addMenu("Filter")
+        self.year_menu = QMenu("Year", self)
+        self.month_menu = QMenu("Month", self)
+        self.label_menu = QMenu("Labels", self)
         self.filter_menu.addMenu(self.year_menu)
         self.filter_menu.addMenu(self.month_menu)
         self.filter_menu.addMenu(self.label_menu)
 
-        show_duplicates_action = QAction("Mostrar Duplicados", self, checkable=True)
+        show_duplicates_action = QAction("Show Duplicates", self, checkable=True)
         show_duplicates_action.triggered.connect(
             lambda checked: self.set_filter(show_duplicates=checked)
         )
         self.filter_menu.addAction(show_duplicates_action)
 
     def setup_sort_menu(self, menubar):
-        sort_menu = menubar.addMenu("Ordenar")
-        sort_asc_action = QAction("Ascendente", self, checkable=True)
-        sort_desc_action = QAction("Descendente", self, checkable=True)
+        sort_menu = menubar.addMenu("Sort")
+        sort_asc_action = QAction("Ascending", self, checkable=True)
+        sort_desc_action = QAction("Descending", self, checkable=True)
         
         sort_asc_action.triggered.connect(
-            lambda: self.set_sort_order("ascendente", sort_asc_action, sort_desc_action)
+            lambda: self.set_sort_order("ascending", sort_asc_action, sort_desc_action)
         )
         sort_desc_action.triggered.connect(
-            lambda: self.set_sort_order("descendente", sort_asc_action, sort_desc_action)
+            lambda: self.set_sort_order("descending", sort_asc_action, sort_desc_action)
         )
         
         sort_menu.addAction(sort_asc_action)
@@ -190,18 +190,18 @@ class PhotoGalleryApp(QMainWindow):
         sort_asc_action.setChecked(True)
 
     def setup_tools_menu(self, menubar):
-        tools_menu = menubar.addMenu("Herramientas")
+        tools_menu = menubar.addMenu("Tools")
         
         # Submenú Generación
-        generation_menu = QMenu("Generación", self)
+        generation_menu = QMenu("Generation", self)
         tools_menu.addMenu(generation_menu)
         
         # Crear todas las acciones primero
-        self.update_all_action = QAction("Actualizar Todo", self)
-        self.generate_thumbnails_action = QAction("Generar Miniaturas", self)
-        self.generate_index_action = QAction("Generar Índice", self)
-        self.generate_labels_action = QAction("Generar Etiquetas", self)
-        self.generate_duplicates_action = QAction("Generar Duplicados", self)
+        self.update_all_action = QAction("Update All", self)
+        self.generate_thumbnails_action = QAction("Generate Thumbnails", self)
+        self.generate_index_action = QAction("Generate Index", self)
+        self.generate_labels_action = QAction("Generate Labels", self)
+        self.generate_duplicates_action = QAction("Generate Duplicates", self)
         
         # Conectar las señales
         self.update_all_action.triggered.connect(self.update_all)
@@ -219,12 +219,12 @@ class PhotoGalleryApp(QMainWindow):
         generation_menu.addAction(self.generate_duplicates_action)
 
         # Submenú Selección
-        selection_menu = QMenu("Selección", self)
+        selection_menu = QMenu("Selection", self)
         tools_menu.addMenu(selection_menu)
         
-        self.activate_selection_action = QAction("Activar", self, checkable=True)
-        self.select_all_action = QAction("Seleccionar Todo", self, checkable=True)
-        self.delete_action = QAction("Eliminar", self)
+        self.activate_selection_action = QAction("Enable", self, checkable=True)
+        self.select_all_action = QAction("Select All", self, checkable=True)
+        self.delete_action = QAction("Delete", self)
         
         selection_menu.addAction(self.activate_selection_action)
         selection_menu.addAction(self.select_all_action)
@@ -242,7 +242,7 @@ class PhotoGalleryApp(QMainWindow):
             lambda checked: self.select_all_action.setEnabled(checked)
         )
 
-        # Guardar referencia a las acciones de generación después de crearlas
+        # Save reference to generation actions after creating them
         self.generation_actions = [
             self.update_all_action,
             self.generate_thumbnails_action,
@@ -251,17 +251,17 @@ class PhotoGalleryApp(QMainWindow):
             self.generate_duplicates_action
         ]
         
-        # Deshabilitar inicialmente todas las acciones
+        # Save reference to generation actions after creating them
         self.update_tools_menu_state()
 
     def update_tools_menu_state(self):
-        """Actualiza el estado de las opciones del menú herramientas"""
+        """Updates the status of the options in the tools menu."""
         enabled = self.config_manager.are_paths_configured()
         for action in self.generation_actions:
             action.setEnabled(enabled)
 
     def check_paths(self):
-        """Verifica que existan las rutas necesarias y las crea si es necesario"""
+        """Verify that the necessary routes exist and create them if necessary."""
         photos_path = self.config_manager.get_photos_path()
         thumbnails_path = self.config_manager.get_thumbnails_path()
         
@@ -269,7 +269,7 @@ class PhotoGalleryApp(QMainWindow):
             QMessageBox.critical(
                 self,
                 "Error",
-                "Las rutas de fotos y miniaturas deben estar configuradas."
+                "The photos and thumbnails paths must be configured."
             )
             return False
 
@@ -278,7 +278,7 @@ class PhotoGalleryApp(QMainWindow):
                 QMessageBox.critical(
                     self,
                     "Error",
-                    "La carpeta de fotos no existe. Por favor, verifique la configuración."
+                    "The photos folder does not exist. Please check the configuration."
                 )
                 return False
                 
@@ -291,7 +291,7 @@ class PhotoGalleryApp(QMainWindow):
             QMessageBox.critical(
                 self,
                 "Error",
-                f"Error al acceder a las rutas: {str(e)}"
+                f"Error accessing paths: {str(e)}"
             )
             return False
         
@@ -359,8 +359,8 @@ class PhotoGalleryApp(QMainWindow):
             self.prev_button.setEnabled(self.current_page > 0)
             self.next_button.setEnabled(self.current_page < self.total_pages - 1)
             self.page_label.setText(
-                f"Página {self.current_page + 1} de {self.total_pages} "
-                f"(Total: {total_images} imágenes)"
+                f"Page {self.current_page + 1} of {self.total_pages} "  # En vez de "Página ... de ..."
+                f"(Total: {total_images} images)"  # En vez de "imágenes"
             )
         else:
             self.pagination_frame.hide()
@@ -397,8 +397,8 @@ class PhotoGalleryApp(QMainWindow):
         
         reply = QMessageBox.question(
             self,
-            'Confirmar eliminación',
-            f'Está a punto de eliminar {len(selected)} imágenes. ¿Desea continuar?',
+            'Confirm deletion',
+            f'You are about to delete {len(selected)} images. Do you want to continue?',
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No
         )
@@ -408,35 +408,35 @@ class PhotoGalleryApp(QMainWindow):
 
     def perform_deletion(self, selected_images):
         try:
-            # Eliminar archivos físicos
+            # Delete physical files
             for image in selected_images:
                 if os.path.exists(image['original']):
                     os.remove(image['original'])
                 if os.path.exists(image['thumbnail']):
                     os.remove(image['thumbnail'])
 
-            # Actualizar archivos JSON
+            # Update JSON files
             self.update_json_after_deletion(selected_images)
             self.load_gallery()
             
             QMessageBox.information(
                 self,
-                "Eliminación completada",
-                f"Se han eliminado {len(selected_images)} imágenes correctamente."
+                "Deletion completed",
+                f"{len(selected_images)} images have been successfully deleted."
             )
 
         except Exception as e:
             QMessageBox.critical(
                 self,
                 "Error",
-                f"Ha ocurrido un error durante la eliminación: {str(e)}"
+                f"An error occurred during deletion: {str(e)}"  # En vez de "Ha ocurrido un error durante la eliminación"
             )
 
     def update_json_after_deletion(self, selected_images):
         deleted_originals = {img['original'] for img in selected_images}
         deleted_thumbnails = {img['thumbnail'] for img in selected_images}
 
-        # Actualizar index.json
+        # Update index.json
         if os.path.exists("index.json"):
             with open("index.json", 'r') as f:
                 index_data = json.load(f)
@@ -444,7 +444,7 @@ class PhotoGalleryApp(QMainWindow):
             with open("index.json", 'w') as f:
                 json.dump(index_data, f, indent=4)
 
-        # Actualizar classification_results.json
+        # Update classification_results.json
         if os.path.exists("classification_results.json"):
             with open("classification_results.json", 'r') as f:
                 class_data = json.load(f)
@@ -452,7 +452,7 @@ class PhotoGalleryApp(QMainWindow):
             with open("classification_results.json", 'w') as f:
                 json.dump(class_data, f, indent=4)
 
-        # Actualizar duplicates.json
+        # Update duplicates.json
         if os.path.exists("duplicates.json"):
             with open("duplicates.json", 'r') as f:
                 dup_data = json.load(f)
@@ -476,7 +476,7 @@ class PhotoGalleryApp(QMainWindow):
                          for file in files if file.lower().endswith(('.jpg', '.jpeg', '.png')))
 
         progress_dialog = QProgressDialog(
-            "Generando miniaturas...", "Cancelar", 0, total_images, self
+            "Generating thumbnails...", "Cancel", 0, total_images, self
         )
         progress_dialog.setWindowModality(Qt.WindowModal)
         progress_dialog.show()
@@ -535,7 +535,7 @@ class PhotoGalleryApp(QMainWindow):
                          for file in files if file.lower().endswith(('.jpg', '.jpeg', '.png')))
 
         progress_dialog = QProgressDialog(
-            "Generando índice...", "Cancelar", 0, total_images, self
+            "Generating index...", "Cancel", 0, total_images, self
         )
         progress_dialog.setWindowModality(Qt.WindowModal)
         progress_dialog.show()
@@ -607,7 +607,7 @@ class PhotoGalleryApp(QMainWindow):
         self.classifier_thread.finished.connect(self.classification_finished)
 
         self.progress_dialog = QProgressDialog(
-            "Clasificando imágenes...", "Cancelar", 0, len(images_data), self
+            "Classifying images...", "Cancel", 0, len(images_data), self
         )
         self.progress_dialog.setWindowModality(Qt.WindowModal)
         self.progress_dialog.show()
@@ -634,7 +634,7 @@ class PhotoGalleryApp(QMainWindow):
             images_data = json.load(f)
 
         progress_dialog = QProgressDialog(
-            "Buscando duplicados...", "Cancelar", 0, len(images_data), self
+            "Searching for duplicates...", "Cancel", 0, len(images_data), self
         )
         progress_dialog.setWindowModality(Qt.WindowModal)
         progress_dialog.show()
@@ -650,10 +650,10 @@ class PhotoGalleryApp(QMainWindow):
         total_duplicates = sum(len(group) for group in duplicates.values())
         QMessageBox.information(
             self,
-            "Detección Completada",
-            f"Se encontraron {total_duplicates} duplicados:\n"
-            f"- Por hash: {len(duplicates.get('hash', []))}\n"
-            f"- Por metadatos EXIF: {len(duplicates.get('exif', []))}"
+            "Detection Completed",
+            f"Found {total_duplicates} duplicates:\n"
+            f"- By hash: {len(duplicates.get('hash', []))}\n"
+            f"- By EXIF metadata: {len(duplicates.get('exif', []))}"
         )
 
     def update_all(self):
@@ -664,8 +664,8 @@ class PhotoGalleryApp(QMainWindow):
 
     def set_sort_order(self, order, asc_action, desc_action):
         self.sort_order = order
-        asc_action.setChecked(order == "ascendente")
-        desc_action.setChecked(order == "descendente")
+        asc_action.setChecked(order == "ascending")
+        desc_action.setChecked(order == "descending")
         self.loaded_thumbnails.clear()
         self.load_gallery()
 
@@ -703,7 +703,7 @@ class PhotoGalleryApp(QMainWindow):
             self.month_menu.addAction(action)
             self.month_action_group.addAction(action)
 
-        # Configuración del grupo de etiquetas
+        # Label group configuration
         all_labels_action = QAction(all_text, self, checkable=True)
         all_labels_action.triggered.connect(lambda: self.set_filter(label=all_text))
         self.label_menu.addAction(all_labels_action)
@@ -731,7 +731,7 @@ class PhotoGalleryApp(QMainWindow):
         self.filtered_images = self.filter_images(images, classifications)
         self.filtered_images.sort(
             key=lambda x: x["timestamp"],
-            reverse=self.sort_order == "descendente"
+            reverse=self.sort_order == "descending"
         )
         
         self.current_page = 0
@@ -768,11 +768,11 @@ class PhotoGalleryApp(QMainWindow):
 
     def set_filter(self, year=None, month=None, label=None, show_duplicates=None):
         if year is not None:
-            self.filter_year = year if year != "Todos" else None
+            self.filter_year = year if year != "All" else None
         if month is not None:
-            self.filter_month = month if month != "Todos" else None
+            self.filter_month = month if month != "All" else None
         if label is not None:
-            self.filter_label = label if label != "Todos" else None
+            self.filter_label = label if label != "All" else None
         if show_duplicates is not None:
             self.show_duplicates = show_duplicates
 
