@@ -417,6 +417,11 @@ class PhotoGalleryApp(QMainWindow):
 
             # Update JSON files
             self.update_json_after_deletion(selected_images)
+
+            # Desactivar la opción "Seleccionar Todo" si está activada
+            if self.select_all_action.isChecked():
+                self.select_all_action.setChecked(False)
+
             self.load_gallery()
             
             QMessageBox.information(
